@@ -83,7 +83,7 @@ augroup TerminalStuff
 augroup END
 
 " Use gdb 8.3 which has better support for std::list<>
-let termdebugger = "/usr/local/gdb83/bin/gdb83"
+"let termdebugger = "/usr/local/gdb83/bin/gdb83"
 
 " Debugger shortcut
 nnoremap <silent> <F5> :Termdebug<CR>
@@ -168,8 +168,11 @@ Plug 'puremourning/vimspector'
 "Yapf
 Plug 'google/yapf' , { 'rtp': 'plugins/vim', 'for': 'python' }
 
-" Myrmex
-Plug '~/.vim/plugged/myrmex'
+"Vim Cmake
+Plug 'vhdirk/vim-cmake'
+
+" Switch between header and source files
+Plug 'derekwyatt/vim-fswitch'
 
 call plug#end()
 
@@ -201,7 +204,7 @@ nnoremap <leader>v :NERDTreeFind<CR>
 
 " For Clang Formater
 let g:clang_format#code_style = 'google'
-let g:clang_format#command = 'clang-format-6.0'
+let g:clang_format#command = 'clang-format-8'
 let g:clang_format#style_options = {
             \ "DerivePointerAlignment": "false",
             \ "PointerAlignment": "Right"}
@@ -230,6 +233,7 @@ let g:syntastic_python_pylint_exec =""
 let g:syntastic_check_on_open = 1
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_check_on_wq = 0
+let g:syntastic_python_python_exec = "python3"
 
 " For Tagbar
 noremap <silent> <leader>ct :TagbarOpen('fjc')<CR>
@@ -284,6 +288,30 @@ imap <C-Y> <c-o>:call yapf#YAPF()<cr>
 noremap <leader>y :call yapf#YAPF()<CR>
 let g:yapf_style = "pep8"
 
+" For vim-cmake
+let g:cmake_build_type = "Debug"
+
+" For vim-fswitch
+noremap <silent> <leader>p :FSHere<CR>
+"Switch to the file and load it into the current window
+nmap <silent> <Leader>of :FSHere<CR>
+"Switch to the file and load it into the window on the right
+nmap <silent> <Leader>ol :FSRight<CR>
+"Switch to the file and load it into a new window split on the right
+nmap <silent> <Leader>oL :FSSplitRight<CR>
+"Switch to the file and load it into the window on the left
+nmap <silent> <Leader>oh :FSLeft<CR>
+"Switch to the file and load it into a new window split on the left
+nmap <silent> <Leader>oH :FSSplitLeft<CR>
+"Switch to the file and load it into the window above
+nmap <silent> <Leader>ok :FSAbove<CR>
+"Switch to the file and load it into a new window split above
+nmap <silent> <Leader>oK :FSSplitAbove<CR>
+"Switch to the file and load it into the window below
+nmap <silent> <Leader>oj :FSBelow<CR>
+"Switch to the file and load it into a new window split below
+nmap <silent> <Leader>oJ :FSSplitBelow<CR>
+
 " Inserting text get's very slow without this
 augroup unset_folding_in_insert_mode
     autocmd!
@@ -292,8 +320,8 @@ augroup unset_folding_in_insert_mode
 augroup END
 
 " For Myrmex to traverse from cpp to header
-noremap <silent> <leader>p  :MyrmexCPP<CR>
-noremap <silent> <leader>j  :MyrmexCPP<CR>
+"noremap <silent> <leader>p  :MyrmexCPP<CR>
+"noremap <silent> <leader>j  :MyrmexCPP<CR>
 
 " Automatically open quickfix window in grep, Ggrep, etc
 "augroup openquickfix
@@ -423,11 +451,3 @@ function! s:FixScrollWheelBug()
     unmap <C-ScrollWheelRight>
 endfunction
 
-
-" Preview with shift-up and shift-down arrows in quickfix and location
-"augroup quickfixpreview
-"        autocmd!
-"        autocmd FileType qf nnoremap <silent> <buffer> <S-Down> <down>:call qf#preview#PreviewFileUnderCursor()<CR>
-"        autocmd FileType qf nnoremap <silent> <buffer> <S-Up> <up>:call qf#preview#PreviewFileUnderCursor()<CR>
-"        autocmd BufNewFile,BufRead * if &previewwindow | setlocal cursorline | endif
-"augroup END
