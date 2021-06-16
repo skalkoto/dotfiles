@@ -82,9 +82,6 @@ augroup TerminalStuff
   autocmd TerminalOpen * setlocal nonumber norelativenumber
 augroup END
 
-" Use gdb 8.3 which has better support for std::list<>
-"let termdebugger = "/usr/local/gdb83/bin/gdb83"
-
 " Debugger shortcut
 nnoremap <silent> <F5> :Termdebug<CR>
 "nnoremap <silent> <F6> :Step<CR>
@@ -112,6 +109,9 @@ Plug 'Valloric/YouCompleteMe'
 " Git
 Plug 'tpope/vim-fugitive'
 
+" Show a git diff in the sign column
+Plug 'airblade/vim-gitgutter'
+
 " Clang Formater
 Plug 'rhysd/vim-clang-format'
 
@@ -119,10 +119,11 @@ Plug 'rhysd/vim-clang-format'
 Plug 'vim-syntastic/syntastic'
 
 " Fuzzy file, buffer, mru, tag, etc finder
-Plug 'ctrlpvim/ctrlp.vim'
+"Plug 'ctrlpvim/ctrlp.vim'
 
 " Fuzzy finder
-"Plug 'junegunn/fzf.vim'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
 
 " Airline decorates the statusbar
 Plug 'vim-airline/vim-airline'
@@ -165,14 +166,17 @@ Plug 'octol/vim-cpp-enhanced-highlight'
 " Debugger
 Plug 'puremourning/vimspector'
 
-"Yapf
+" Yapf
 Plug 'google/yapf' , { 'rtp': 'plugins/vim', 'for': 'python' }
 
-"Vim Cmake
+" Vim Cmake
 Plug 'vhdirk/vim-cmake'
 
 " Switch between header and source files
 Plug 'derekwyatt/vim-fswitch'
+
+" Myrmex
+Plug '~/.vim/plugged/myrmex'
 
 call plug#end()
 
@@ -182,7 +186,10 @@ let g:ycm_global_ycm_extra_conf = '~/.vim/ycm_global_ycm_extra_conf.py'
 let g:ycm_python_binary_path = 'python' " This works for virtualenvs
 let g:ycm_always_populate_location_list = 1 " Jump to errors with lnext, lprev
 let g:ycm_autoclose_preview_window_after_insertion = 1 " self explaining
+let g:ycm_auto_hover = '' " the auto hover is irritating
+let g:ycm_use_clangd = 0
 
+noremap <leader>D <plug>(YCMHover)
 noremap <leader>gc :YcmCompleter GoToDeclaration<CR>
 noremap <leader>gd :YcmCompleter GetDoc<CR>
 noremap <leader>gf :YcmCompleter FixIt<CR>
@@ -204,7 +211,7 @@ nnoremap <leader>v :NERDTreeFind<CR>
 
 " For Clang Formater
 let g:clang_format#code_style = 'google'
-let g:clang_format#command = 'clang-format-8'
+let g:clang_format#command = 'clang-format-6.0'
 let g:clang_format#style_options = {
             \ "DerivePointerAlignment": "false",
             \ "PointerAlignment": "Right"}
@@ -221,10 +228,13 @@ nnoremap <leader>C :ClangFormatAutoToggle<CR>
 "nnoremap <leader>l :CtrlPBuffer<CR>
 " this is faster but we are not using it because it will ignore exclusions
 " let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
-set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.pyc,*.o,*.obj
-let g:ctrlp_custom_ignore = '\v[\/](\.git|\.hg|\.svn|build(_release)?|install|devel(_release)?|logs(_release)?|scripts|logs|mru_binaries)$'
+"set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.pyc,*.o,*.obj
+"let g:ctrlp_custom_ignore = '\v[\/](\.git|\.hg|\.svn|build(_release)?|install|devel(_release)?|logs(_release)?|scripts|logs|mru_binaries)$'
 " marker for the workspace root
-let g:ctrlp_root_markers = ['.catkin_workspace']
+"let g:ctrlp_root_markers = ['.catkin_workspace']
+"
+"For FZF
+nmap <C-P> :GitFiles<CR>
 
 " For Syntastic
 " pylint takes ages to run
@@ -292,7 +302,7 @@ let g:yapf_style = "pep8"
 let g:cmake_build_type = "Debug"
 
 " For vim-fswitch
-noremap <silent> <leader>p :FSHere<CR>
+"noremap <silent> <leader>p :FSHere<CR>
 "Switch to the file and load it into the current window
 nmap <silent> <Leader>of :FSHere<CR>
 "Switch to the file and load it into the window on the right
@@ -320,8 +330,8 @@ augroup unset_folding_in_insert_mode
 augroup END
 
 " For Myrmex to traverse from cpp to header
-"noremap <silent> <leader>p  :MyrmexCPP<CR>
-"noremap <silent> <leader>j  :MyrmexCPP<CR>
+noremap <silent> <leader>p  :MyrmexCPP<CR>
+noremap <silent> <leader>j  :MyrmexCPP<CR>
 
 " Automatically open quickfix window in grep, Ggrep, etc
 "augroup openquickfix
@@ -400,7 +410,7 @@ command! TabSyntax set softtabstop=0 expandtab shiftwidth=8
 command! F let @*=expand("%:p") | echo @*
 
 " Go to next error
-nnoremap <silent> <leader>e :lnext!<CR>
+nnoremap <silent> <leader>e :lafter<CR>
 
 " Go to previous error
 nnoremap <silent> <leader>E :lprevious!<CR>
