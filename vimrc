@@ -11,12 +11,13 @@ set smartindent
 " set the color column
 set colorcolumn=81
 augroup identation
-  autocmd!
-  autocmd FileType python setlocal shiftwidth=4 softtabstop=4 expandtab cc=80
-  autocmd FileType c,cpp,objc,cmake,yaml setlocal shiftwidth=2 softtabstop=2 expandtab
-  autocmd FileType sh setlocal shiftwidth=4 softtabstop=4 expandtab
-  autocmd FileType qf setlocal cc=0
-  autocmd FileType gitcommit setlocal cc=73 spell
+    autocmd!
+    autocmd FileType python setlocal shiftwidth=4 softtabstop=4 expandtab cc=80
+    autocmd FileType c,cpp,objc,cmake,yaml setlocal shiftwidth=2 softtabstop=2 expandtab
+    autocmd FileType sh setlocal shiftwidth=4 softtabstop=4 expandtab
+    autocmd FileType qf setlocal cc=0
+    autocmd FileType gitcommit setlocal cc=73 spell
+    autocmd FileType vim setlocal shiftwidth=4 softtabstop=4 expandtab
 augroup END
 
 " Fix spell highlighting on comments
@@ -24,13 +25,13 @@ highlight SpellLocal ctermfg=0
 
 " Use cppman on C++ files when pressing K
 augroup manpages
-  autocmd!
-  autocmd FileType cpp setlocal keywordprg=cppman
+    autocmd!
+    autocmd FileType cpp setlocal keywordprg=cppman
 augroup END
 
 augroup syntax
-  autocmd!
-  autocmd BufNewFile,BufRead *.j2 set ft=jinja
+    autocmd!
+    autocmd BufNewFile,BufRead *.j2 set ft=jinja
 augroup END
 
 " turn syntax highlighting on
@@ -79,7 +80,7 @@ let mapleader = " "
 nnoremap <leader>t :terminal<CR>
 
 augroup TerminalStuff
-  autocmd TerminalOpen * setlocal nonumber norelativenumber
+    autocmd TerminalOpen * setlocal nonumber norelativenumber
 augroup END
 
 " Debugger shortcut
@@ -93,9 +94,9 @@ nnoremap <silent> <F5> :Termdebug<CR>
 
 
 if empty(glob('~/.vim/autoload/plug.vim'))
-      silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
-          \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-            autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+    silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+                \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
 call plug#begin('~/.vim/plugged')
@@ -111,9 +112,6 @@ Plug 'tpope/vim-fugitive'
 
 " Show a git diff in the sign column
 Plug 'airblade/vim-gitgutter'
-
-" Clang Formater
-Plug 'rhysd/vim-clang-format'
 
 " Syntax checking hacks for vim
 Plug 'vim-syntastic/syntastic'
@@ -131,9 +129,6 @@ Plug 'vim-airline/vim-airline-themes'
 
 " Tabgar will show the code tag (class name, function name) in the statusbar
 Plug 'majutsushi/tagbar'
-
-" Automatically format python code to conform to the PEP 8 style guide
-Plug 'tell-k/vim-autopep8'
 
 " Open a Quickfix item in a window you choose
 Plug 'yssl/QFEnter'
@@ -166,28 +161,22 @@ Plug 'octol/vim-cpp-enhanced-highlight'
 " Debugger
 Plug 'puremourning/vimspector'
 
-" Yapf
-Plug 'google/yapf' , { 'rtp': 'plugins/vim', 'for': 'python' }
-
-" Vim Cmake
-Plug 'vhdirk/vim-cmake'
-
 " Switch between header and source files
 Plug 'derekwyatt/vim-fswitch'
 
-" Myrmex
-Plug '~/.vim/plugged/myrmex'
+" Many many formatters
+Plug 'vim-autoformat/vim-autoformat'
 
 call plug#end()
 
 " For YouCompleteMe
 let g:ycm_confirm_extra_conf = 0
-let g:ycm_global_ycm_extra_conf = '~/.vim/ycm_global_ycm_extra_conf.py'
+"let g:ycm_global_ycm_extra_conf = '~/.vim/ycm_global_ycm_extra_conf.py'
 let g:ycm_python_binary_path = 'python' " This works for virtualenvs
 let g:ycm_always_populate_location_list = 1 " Jump to errors with lnext, lprev
 let g:ycm_autoclose_preview_window_after_insertion = 1 " self explaining
 let g:ycm_auto_hover = '' " the auto hover is irritating
-let g:ycm_use_clangd = 0
+let g:ycm_use_clangd = 1
 
 noremap <leader>D <plug>(YCMHover)
 noremap <leader>gc :YcmCompleter GoToDeclaration<CR>
@@ -209,19 +198,10 @@ nnoremap <leader><tab> :NERDTreeToggle<CR>
 nnoremap <leader>f :NERDTreeToggle<CR>
 nnoremap <leader>v :NERDTreeFind<CR>
 
-" For Clang Formater
-let g:clang_format#code_style = 'google'
-let g:clang_format#command = 'clang-format-6.0'
-let g:clang_format#style_options = {
-            \ "DerivePointerAlignment": "false",
-            \ "PointerAlignment": "Right"}
-augroup clangformat
-  autocmd!
-  autocmd FileType c,cpp,objc nnoremap <buffer><Leader>cf :<C-U>ClangFormat<CR>
-  autocmd FileType c,cpp,objc vnoremap <buffer><Leader>cf :ClangFormat<CR>
-augroup END
-" Toggle auto formatting:
-nnoremap <leader>C :ClangFormatAutoToggle<CR>
+" For vim-autoformat
+let g:formatdef_clangformat = "'clang-format-6.0 -lines='.a:firstline.':'.a:lastline.' --assume-filename=\"'.expand('%:p').'\" -style=\"{BasedOnStyle: google, DerivePointerAlignment: false, PointerAlignment: Right}\"'"
+let g:formatters_python = ['yapf', 'autopep8', 'black']
+let g:formatter_yampf_style = 'pep8'
 
 " For CtrlP
 "nnoremap <leader>o :CtrlP $MYRMEX_HOME<CR>
@@ -288,16 +268,6 @@ let g:pymode_options_colorcolumn = 0
 " Add ack.vim-inspirede mappings
 let g:qf_mapping_ack_style = 1
 
-" For autopep8
-let g:autopep8_max_line_length=79
-let g:autopep8_disable_show_diff=1
-
-" For yapf
-map <C-Y> :call yapf#YAPF()<cr>
-imap <C-Y> <c-o>:call yapf#YAPF()<cr>
-noremap <leader>y :call yapf#YAPF()<CR>
-let g:yapf_style = "pep8"
-
 " For vim-cmake
 let g:cmake_build_type = "Debug"
 
@@ -329,9 +299,9 @@ augroup unset_folding_in_insert_mode
     autocmd InsertLeave *.py setlocal foldmethod=expr
 augroup END
 
-" For Myrmex to traverse from cpp to header
-noremap <silent> <leader>p  :MyrmexCPP<CR>
-noremap <silent> <leader>j  :MyrmexCPP<CR>
+" For ROS to traverse from cpp to header
+noremap <silent> <leader>p  :HeaderToggle<CR>
+noremap <silent> <leader>j  :HeaderToggle<CR>
 
 " Automatically open quickfix window in grep, Ggrep, etc
 "augroup openquickfix
@@ -363,6 +333,9 @@ nnoremap <silent> <C-Left> <C-W>h
 " next buffer
 nnoremap <leader>n :bn<CR>
 
+" previous buffer
+nnoremap <leader>N :bp<CR>
+
 " Go to buffer using a count
 nnoremap <silent> <expr> <leader>b ":b" . (v:count == 0 ? "1" : v:count) . "\<CR>"
 
@@ -370,43 +343,90 @@ nnoremap <silent> <expr> <leader>b ":b" . (v:count == 0 ? "1" : v:count) . "\<CR
 nnoremap <silent> <expr> <CR> SearchWord()
 let g:highlighting = 0
 function! SearchWord()
-  let l:old=@/
-  if g:highlighting == 1 && @/ =~ '^\\<'.expand('<cword>').'\\>$'
-    let g:highlighting = 0
-    return ":silent nohls\<CR>"
-  endif
-  let g:highlighting = 1
-  let @/='\<'.expand("<cword>").'\>'
-  return ":silent set hls\<CR>"
+    let l:old=@/
+    if g:highlighting == 1 && @/ =~ '^\\<'.expand('<cword>').'\\>$'
+        let g:highlighting = 0
+        return ":silent nohls\<CR>"
+    endif
+    let g:highlighting = 1
+    let @/='\<'.expand("<cword>").'\>'
+    return ":silent set hls\<CR>"
 endfunction
 vnoremap <silent> <expr> <CR> SearchSelection()
 function! SearchSelection()
-  let g:highlighting = 1
-  "normal! gv"ay
-  "let @/=@"
-  return "\<C-u>:silent set hls\<CR>"
+    let g:highlighting = 1
+    "normal! gv"ay
+    "let @/=@"
+    return "\<C-u>:silent set hls\<CR>"
 endfunction
- 
-"nnoremap <silent> * :let @/='\<<C-R>=expand("<cword>")<CR>\>'<CR>:set hls<CR>
-
 
 command! CloseHiddenBuffers call s:CloseHiddenBuffers()
 function! s:CloseHiddenBuffers()
-  let open_buffers = []
+    let open_buffers = []
 
-  for i in range(tabpagenr('$'))
-    call extend(open_buffers, tabpagebuflist(i + 1))
-  endfor
+    for i in range(tabpagenr('$'))
+        call extend(open_buffers, tabpagebuflist(i + 1))
+    endfor
 
-  for num in range(1, bufnr("$") + 1)
-    if buflisted(num) && index(open_buffers, num) == -1
-      exec "bdelete ".num
+    for num in range(1, bufnr("$") + 1)
+        if buflisted(num) && index(open_buffers, num) == -1
+            exec "bdelete ".num
+        endif
+    endfor
+endfunction
+
+command! HeaderToggle call s:HeaderToggle()
+function! s:HeaderToggle()
+    let ext = expand("%:e")
+    if ext == "cpp"
+        let new_ext = "h"
+        let cannot_find = "Cannot find a suitable header file"
+    elseif ext == "h"
+        let new_ext = "cpp"
+        let cannot_find = "Cannot find a suitable cpp file"
+    else
+        return "echo 'I only know how to handle *.cpp and *.h files'\<CR>"
     endif
-  endfor
+
+    let root_path = expand("%:p:r")
+    if filereadable(root_path . "." . new_ext)
+        return ":e %<.".new_ext."\<CR>"
+    endif
+
+    let root_split = split(root_path, "/")
+    if ext == "cpp"
+        call reverse(root_split)
+        let src_idx = index(root_split, "src")
+        let pkg_name = root_split[src_idx + 1]
+        let target_split = root_split[src_idx+1:]
+        call insert(target_split, "include")
+        call insert(target_split, pkg_name)
+        call reverse(target_split)
+        call reverse(root_split)
+        call extend(target_split, root_split[len(root_split) - src_idx:])
+    else
+        let incl_idx = index(root_split, "include")
+        if incl_idx == -1
+            " this is not a header under include
+            return ":echo '".cannot_find."'\<CR>"
+        else
+            let target_split = root_split[0:incl_idx-1]
+            call add(target_split, "src")
+            call extend(target_split, root_split[incl_idx+2:])
+        endif
+    endif
+
+    let target = "/" . join(target_split, "/") . "." . new_ext
+    if filereadable(target)
+        return ":e ".target."\<CR>"
+    else
+        return ":echo '".cannot_find."'\<CR>"
+    endif
 endfunction
 
 command! TabSyntax set softtabstop=0 expandtab shiftwidth=8
 
+" Print full path and copy it to the clipboard
 command! F let @*=expand("%:p") | echo @*
 
 " Go to next error
@@ -429,35 +449,3 @@ vnoremap <silent> <S-Down> :<C-U>execute ":'<,'>m" . (line("'>") + 1)<CR>gv
 " swap characters
 nnoremap <silent> <S-Right> xp
 nnoremap <silent> <S-Left> Xph
-
-command! FixScrollWheelBug call s:FixScrollWheelBug()
-function! s:FixScrollWheelBug()
-    set mouse=a
-
-    nmap <ScrollWheelUp> <nop>
-    nmap <S-ScrollWheelUp> <nop>
-    nmap <C-ScrollWheelUp> <nop>
-    nmap <ScrollWheelDown> <nop>
-    nmap <S-ScrollWheelDown> <nop>
-    nmap <C-ScrollWheelDown> <nop>
-    nmap <ScrollWheelLeft> <nop>
-    nmap <S-ScrollWheelLeft> <nop>
-    nmap <C-ScrollWheelLeft> <nop>
-    nmap <ScrollWheelRight> <nop>
-    nmap <S-ScrollWheelRight> <nop>
-    nmap <C-ScrollWheelRight> <nop>
-
-    unmap <ScrollWheelUp>
-    unmap <S-ScrollWheelUp>
-    unmap <C-ScrollWheelUp>
-    unmap <ScrollWheelDown>
-    unmap <S-ScrollWheelDown>
-    unmap <C-ScrollWheelDown>
-    unmap <ScrollWheelLeft>
-    unmap <S-ScrollWheelLeft>
-    unmap <C-ScrollWheelLeft>
-    unmap <ScrollWheelRight>
-    unmap <S-ScrollWheelRight>
-    unmap <C-ScrollWheelRight>
-endfunction
-
