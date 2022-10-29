@@ -15,8 +15,7 @@ XTerm*utf8Title: True
 XTerm*renderFont: True
 XTerm*preeditType: Root
 XTerm*xftAntialias: true
-XTerm.vt100.faceName: xft:Terminus:pixelsize=14
-!XTerm.vt100.faceName: xft:Terminus
+XTerm.vt100.faceName: xft:Terminus
 XTerm.vt100.font: 7x13
 XTerm.vt100.faceSize: 10.0
 
