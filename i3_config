@@ -120,13 +120,13 @@ bindsym $mod+Shift+0 move container to workspace 10
 bindsym $mod+Shift+minus move container to workspace 11
 bindsym $mod+Shift+equal move container to workspace 12
 
-workspace 1 output HDMI-1-1
-workspace 2 output HDMI-1-1
-workspace 3 output HDMI-1-1
-workspace 4 output HDMI-1-1
-workspace 5 output HDMI-1-1
-workspace 11 output eDP-1-1
-workspace 12 output eDP-1-1
+workspace 1 output DP-1
+workspace 2 output DP-1
+workspace 3 output DP-1
+workspace 4 output DP-1
+workspace 5 output DP-1
+workspace 11 output eDP-1
+workspace 12 output eDP-1
 
 # reload the configuration file
 bindsym $mod+Shift+c reload
@@ -182,9 +182,15 @@ mode "move" {
 bindsym $mod+m mode "move" focus floating
 
 # Keyboard bind keys
-bindsym XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +10% && pkill -RTMIN+10 i3blocks
-bindsym XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -10% && pkill -RTMIN+10 i3blocks
-bindsym XF86AudioMute exec pactl set-sink-mute 1 toggle && pkill -RTMIN+10 i3blocks
+bindsym XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
+bindsym --release XF86AudioRaiseVolume exec pkill -RTMIN+10 i3blocks
+bindsym XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%
+bindsym --release XF86AudioLowerVolume exec pkill -RTMIN+10 i3blocks
+bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
+bindsym --release XF86AudioMute exec pkill -RTMIN+10 i3blocks
+bindsym XF86AudioPlay exec playerctl play-pause
+bindsym XF86AudioNext exec playerctl next
+bindsym XF86AudioPrev exec playerctl previous
 bindsym XF86HomePage exec google-chrome
 bindsym XF86Search exec --no-startup-id i3-dmenu-desktop
 bindsym XF86Calculator exec xcalc
@@ -194,24 +200,27 @@ bindsym XF86Launch5 exec pavucontrol
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
 bar {
-        status_command i3blocks
-        position bottom
+    status_command i3blocks
+    position top
+    tray_output primary
 }
 
-# fix displays
-exec --no-startup-id "~/.config/i3/fix-multiple-monitors.sh"
 
 # keyboard layout
-exec setxkbmap -layout us,gr -option 'grp:ctrl_alt_toggle,grp_led:scroll'
+exec /usr/local/bin/keyboard-setup
+exec --no-startup-id inputplug -c /usr/local/bin/keyboard-setup
 
 # Network manager
 exec --no-startup-id nm-applet
 
 # Lock screen
-bindsym $mod+Escape exec i3lock -c 000000
+# bindsym $mod+Escape exec i3lock -c 000000
+bindsym $mod+Escape exec i3lock -p win -i /home/skalkoto/.config/i3/screenshot.png
 
 # Wallpaper
-#exec --no-startup-id "/usr/bin/feh --bg-scale /home/skalkoto/.config/i3/arch-linux-wallpaper-8.png"
+#exec --no-startup-id /usr/bin/feh --bg-scale /home/skalkoto/.config/i3/screenshot.png
+# turn everything black
+exec --no-startup-id xsetroot -solid '#000000'
 
 # Focus urgent (red) workspace
 bindsym $mod+x [urgent=latest] focus
@@ -222,16 +231,23 @@ bindsym Shift+$mod+bracketright move workspace to output right
 # move workspace to left
 bindsym Shift+$mod+bracketleft move workspace to output left
 
-# disable external monitor
-bindsym $mod+F2 exec --no-startup-id xrandr --output HDMI-1-1 --off
+# move workspace to up
+bindsym Shift+$mod+apostrophe move workspace to output up
 
-# enable external monitor
-bindsym $mod+F3 exec --no-startup-id xrandr --output HDMI-1-1 --left-of eDP-1-1 --auto
-bindsym $mod+p exec --no-startup-id xrandr --output HDMI-1-1 --left-of eDP-1-1 --auto
+# move workspace to down
+bindsym Shift+$mod+slash move workspace to output down
+
+
+bindsym $mod+F1 exec --no-startup-id autorandr -l default
+bindsym $mod+F2 exec --no-startup-id autorandr -l office
+bindsym $mod+F3 exec --no-startup-id autorandr -l home
+
+# For i3blocks key indicators
+bindsym --release Caps_Lock exec pkill -SIGRTMIN+11 i3blocks
+bindsym --release Num_Lock  exec pkill -SIGRTMIN+11 i3blocks
 
 # Chrome
-exec google-chrome-stable
-assign [instance="google-chrome"] 1
+#exec google-chrome-stable
 
 # Assign spotify to workspace 11
 #assign [class="Spotify"] 11
@@ -245,8 +261,13 @@ for_window [title="Google Hangouts"] move container to workspace 12
 #assign [title="Hangouts"] 12
 
 # open chat at startup
-exec i3-dmenu-desktop --dmenu='echo Chat'
+#exec i3-dmenu-desktop --dmenu='echo Chat'
 for_window [title="sw - Chat"] move container to workspace 12
 #for_window [class="Ueyecameramanager"] floating enabled
 #for_window [class="Ueyedemo"] floating enabled
 #for_window [class="Start_gui.py"] floating enabled
+for_window [class="^Display-im6"] floating enabled
+exec slack
+for_window [class="Slack"] move container to workspace 12
+
+exec caffeine-indicator &
