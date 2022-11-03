@@ -375,7 +375,7 @@ function! s:CloseHiddenBuffers()
     endfor
 endfunction
 
-command! HeaderToggle call s:HeaderToggle()
+command! HeaderToggle execute s:HeaderToggle()
 function! s:HeaderToggle()
     let ext = expand("%:e")
     if ext == "cpp"
@@ -385,12 +385,12 @@ function! s:HeaderToggle()
         let new_ext = "cpp"
         let cannot_find = "Cannot find a suitable cpp file"
     else
-        return "echo 'I only know how to handle *.cpp and *.h files'\<CR>"
+        return "echo 'I only know how to handle *.cpp and *.h files'"
     endif
 
     let root_path = expand("%:p:r")
     if filereadable(root_path . "." . new_ext)
-        return ":e %<.".new_ext."\<CR>"
+        return ":e %<.".new_ext
     endif
 
     let root_split = split(root_path, "/")
@@ -408,7 +408,7 @@ function! s:HeaderToggle()
         let incl_idx = index(root_split, "include")
         if incl_idx == -1
             " this is not a header under include
-            return ":echo '".cannot_find."'\<CR>"
+            return ":echo '".cannot_find
         else
             let target_split = root_split[0:incl_idx-1]
             call add(target_split, "src")
@@ -418,9 +418,9 @@ function! s:HeaderToggle()
 
     let target = "/" . join(target_split, "/") . "." . new_ext
     if filereadable(target)
-        return ":e ".target."\<CR>"
+        return ":e ".target
     else
-        return ":echo '".cannot_find."'\<CR>"
+        return ":echo '".cannot_find
     endif
 endfunction
 
